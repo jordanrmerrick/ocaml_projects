@@ -1,0 +1,1146 @@
+\hypertarget{lists-and-patterns}{%
+\section{Lists and Patterns}\label{lists-and-patterns}}
+
+This chapter will focus on two common elements of programming in OCaml:
+lists and pattern matching. Both of these were discussed in
+\href{guided-tour.html\#a-guided-tour}{A Guided Tour}, but we'll go into
+more depth here, presenting the two topics together and using one to
+help illustrate the other.
+
+\hypertarget{list-basics}{%
+\subsection{List Basics}\label{list-basics}}
+
+An OCaml list is an immutable, finite sequence of elements of the same
+type. As we've seen, OCaml lists can be generated using a
+bracket-and-semicolon notation:\index{lists/generation of}
+
+\begin{lstlisting}[language=Caml]
+# open Base
+# [1;2;3]
+- : int list = [1; 2; 3]
+\end{lstlisting}
+
+And they can also be generated using the equivalent
+\passthrough{\lstinline!::!}
+notation:\index{operators/: : operator}\index{lists/operator : :}
+
+\begin{lstlisting}[language=Caml]
+# 1 :: (2 :: (3 :: []))
+- : int list = [1; 2; 3]
+# 1 :: 2 :: 3 :: []
+- : int list = [1; 2; 3]
+\end{lstlisting}
+
+As you can see, the \passthrough{\lstinline!::!} operator is
+right-associative, which means that we can build up lists without
+parentheses. The empty list \passthrough{\lstinline![]!} is used to
+terminate a list. Note that the empty list is polymorphic, meaning it
+can be used with elements of any type, as you can see here:
+
+\begin{lstlisting}[language=Caml]
+# let empty = []
+val empty : 'a list = []
+# 3 :: empty
+- : int list = [3]
+# "three" :: empty
+- : string list = ["three"]
+\end{lstlisting}
+
+The way in which the \passthrough{\lstinline!::!} operator attaches
+elements to the front of a list reflects the fact that OCaml's lists are
+in fact singly linked lists. The figure below is a rough graphical
+representation of how the list
+\passthrough{\lstinline!1 :: 2 :: 3 :: []!} is laid out as a data
+structure. The final arrow (from the box containing
+\passthrough{\lstinline!3!}) points to the empty
+list.\index{lists/structure of}
+
+Each \passthrough{\lstinline!::!} essentially adds a new block to the
+proceding picture. Such a block contains two things: a reference to the
+data in that list element, and a reference to the remainder of the list.
+This is why \passthrough{\lstinline!::!} can extend a list without
+modifying it; extension allocates a new list element but does not change
+any of the existing ones, as you can see:\index{lists/extension of}
+
+\begin{lstlisting}[language=Caml]
+# let l = 1 :: 2 :: 3 :: []
+val l : int list = [1; 2; 3]
+# let m = 0 :: l
+val m : int list = [0; 1; 2; 3]
+# l
+- : int list = [1; 2; 3]
+\end{lstlisting}
+
+\hypertarget{using-patterns-to-extract-data-from-a-list}{%
+\subsection{Using Patterns to Extract Data from a
+List}\label{using-patterns-to-extract-data-from-a-list}}
+
+We can read data out of a list using a \passthrough{\lstinline!match!}
+statement. Here's a simple example of a recursive function that computes
+the sum of all elements of a
+list:\index{match statements}\protect\hypertarget{PATMAT}{}{pattern
+matching/extracting data with}\index{lists/extracting data from}
+
+\begin{lstlisting}[language=Caml]
+# let rec sum l =
+    match l with
+    | [] -> 0
+    | hd :: tl -> hd + sum tl
+val sum : int list -> int = <fun>
+# sum [1;2;3]
+- : int = 6
+# sum []
+- : int = 0
+\end{lstlisting}
+
+This code follows the convention of using \passthrough{\lstinline!hd!}
+to represent the first element (or head) of the list, and
+\passthrough{\lstinline!tl!} to represent the remainder (or tail).
+
+The \passthrough{\lstinline!match!} statement in
+\passthrough{\lstinline!sum!} is really doing two things: first, it's
+acting as a case-analysis tool, breaking down the possibilities into a
+pattern-indexed list of cases. Second, it lets you name substructures
+within the data structure being matched. In this case, the variables
+\passthrough{\lstinline!hd!} and \passthrough{\lstinline!tl!} are bound
+by the pattern that defines the second case of the match statement.
+Variables that are bound in this way can be used in the expression to
+the right of the arrow for the pattern in question.
+
+The fact that \passthrough{\lstinline!match!} statements can be used to
+bind new variables can be a source of confusion. To see how, imagine we
+wanted to write a function that filtered out from a list all elements
+equal to a particular value. You might be tempted to write that code as
+follows, but when you do, the compiler will immediately warn you that
+something is wrong:
+
+\begin{lstlisting}[language=Caml]
+# let rec drop_value l to_drop =
+    match l with
+    | [] -> []
+    | to_drop :: tl -> drop_value tl to_drop
+    | hd :: tl -> hd :: drop_value tl to_drop
+Line 5, characters 7-15:
+Warning 11: this match case is unused.
+val drop_value : 'a list -> 'a -> 'a list = <fun>
+\end{lstlisting}
+
+Moreover, the function clearly does the wrong thing, filtering out all
+elements of the list rather than just those equal to the provided value,
+as you can see here:
+
+\begin{lstlisting}[language=Caml]
+# drop_value [1;2;3] 2
+- : int list = []
+\end{lstlisting}
+
+So, what's going on?
+
+The key observation is that the appearance of
+\passthrough{\lstinline!to\_drop!} in the second case doesn't imply a
+check that the first element is equal to the value
+\passthrough{\lstinline!to\_drop!} that was passed in as an argument to
+\passthrough{\lstinline!drop\_value!}. Instead, it just causes a new
+variable \passthrough{\lstinline!to\_drop!} to be bound to whatever
+happens to be in the first element of the list, shadowing the earlier
+definition of \passthrough{\lstinline!to\_drop!}. The third case is
+unused because it is essentially the same pattern as we had in the
+second case.
+
+A better way to write this code is not to use pattern matching for
+determining whether the first element is equal to
+\passthrough{\lstinline!to\_drop!}, but to instead use an ordinary
+\passthrough{\lstinline!if!} statement:
+
+\begin{lstlisting}[language=Caml]
+# let rec drop_value l to_drop =
+    match l with
+    | [] -> []
+    | hd :: tl ->
+      let new_tl = drop_value tl to_drop in
+      if hd = to_drop then new_tl else hd :: new_tl
+val drop_value : int list -> int -> int list = <fun>
+# drop_value [1;2;3] 2
+- : int list = [1; 3]
+\end{lstlisting}
+
+If we wanted to drop a particular literal value, rather than a value
+that was passed in, we could do this using something like our original
+implementation of \passthrough{\lstinline!drop\_value!}:
+
+\begin{lstlisting}[language=Caml]
+# let rec drop_zero l =
+    match l with
+    | [] -> []
+    | 0  :: tl -> drop_zero tl
+    | hd :: tl -> hd :: drop_zero tl
+val drop_zero : int list -> int list = <fun>
+# drop_zero [1;2;0;3]
+- : int list = [1; 2; 3]
+\end{lstlisting}
+
+\hypertarget{limitations-and-blessings-of-pattern-matching}{%
+\subsection{Limitations (and Blessings) of Pattern
+Matching}\label{limitations-and-blessings-of-pattern-matching}}
+
+The preceding example highlights an important fact about patterns, which
+is that they can't be used to express arbitrary conditions. Patterns can
+characterize the layout of a data structure and can even include
+literals, as in the \passthrough{\lstinline!drop\_zero!} example, but
+that's where they stop. A pattern can check if a list has two elements,
+but it can't check if the first two elements are equal to each
+other.\index{data structures/pattern matching and}
+
+You can think of patterns as a specialized sublanguage that can express
+a limited (though still quite rich) set of conditions. The fact that the
+pattern language is limited turns out to be a good thing, making it
+possible to build better support for patterns in the compiler. In
+particular, both the efficiency of \passthrough{\lstinline!match!}
+statements and the ability of the compiler to detect errors in matches
+depend on the constrained nature of patterns.
+
+\hypertarget{performance}{%
+\subsubsection{Performance}\label{performance}}
+
+Naively, you might think that it would be necessary to check each case
+in a \passthrough{\lstinline!match!} in sequence to figure out which one
+fires. If the cases of a match were guarded by arbitrary code, that
+would be the case. But OCaml is often able to generate machine code that
+jumps directly to the matched case based on an efficiently chosen set of
+runtime checks.
+
+As an example, consider the following rather silly functions for
+incrementing an integer by one. The first is implemented with a
+\passthrough{\lstinline!match!} statement, and the second with a
+sequence of \passthrough{\lstinline!if!} statements:
+
+\begin{lstlisting}[language=Caml]
+# let plus_one_match x =
+    match x with
+    | 0 -> 1
+    | 1 -> 2
+    | 2 -> 3
+    | 3 -> 4
+    | 4 -> 5
+    | 5 -> 6
+    | _ -> x + 1
+val plus_one_match : int -> int = <fun>
+# let plus_one_if x =
+    if      x = 0 then 1
+    else if x = 1 then 2
+    else if x = 2 then 3
+    else if x = 3 then 4
+    else if x = 4 then 5
+    else if x = 5 then 6
+    else x + 1
+val plus_one_if : int -> int = <fun>
+\end{lstlisting}
+
+Note the use of \passthrough{\lstinline!\_!} in the above match. This is
+a wildcard pattern that matches any value, but without binding a
+variable name to the value in question.
+
+If you benchmark these functions, you'll see that
+\passthrough{\lstinline!plus\_one\_if!} is considerably slower than
+\passthrough{\lstinline!plus\_one\_match!}, and the advantage gets
+larger as the number of cases increases. Here, we'll benchmark these
+functions using the \passthrough{\lstinline!core\_bench!} library, which
+can be installed by running
+\passthrough{\lstinline!opam install core\_bench!} from the command
+line.
+
+\begin{lstlisting}[language=Caml]
+# #require "core_bench"
+# open Core_bench
+# [ Bench.Test.create ~name:"plus_one_match" (fun () ->
+        ignore (plus_one_match 10))
+  ; Bench.Test.create ~name:"plus_one_if" (fun () ->
+        ignore (plus_one_if 10)) ]
+  |> Bench.bench
+Estimated testing time 20s (2 benchmarks x 10s). Change using -quota SECS.
+┌────────────────┬──────────┐
+│ Name           │ Time/Run │
+├────────────────┼──────────┤
+│ plus_one_match │  34.86ns │
+│ plus_one_if    │  54.89ns │
+└────────────────┴──────────┘
+- : unit = ()
+\end{lstlisting}
+
+Here's another, less artificial example. We can rewrite the
+\passthrough{\lstinline!sum!} function we described earlier in the
+chapter using an \passthrough{\lstinline!if!} statement rather than a
+match. We can then use the functions
+\passthrough{\lstinline!is\_empty!}, \passthrough{\lstinline!hd\_exn!},
+and \passthrough{\lstinline!tl\_exn!} from the
+\passthrough{\lstinline!List!} module to deconstruct the list, allowing
+us to implement the entire function without pattern matching:
+
+\begin{lstlisting}[language=Caml]
+# let rec sum_if l =
+    if List.is_empty l then 0
+    else List.hd_exn l + sum_if (List.tl_exn l)
+val sum_if : int list -> int = <fun>
+\end{lstlisting}
+
+Again, we can benchmark these to see the difference:
+
+\begin{lstlisting}[language=Caml]
+# let numbers = List.range 0 1000 in
+  [ Bench.Test.create ~name:"sum_if" (fun () -> ignore (sum_if numbers))
+  ; Bench.Test.create ~name:"sum"    (fun () -> ignore (sum numbers)) ]
+  |> Bench.bench
+Estimated testing time 20s (2 benchmarks x 10s). Change using -quota SECS.
+┌────────┬──────────┐
+│ Name   │ Time/Run │
+├────────┼──────────┤
+│ sum_if │  62.00us │
+│ sum    │  17.99us │
+└────────┴──────────┘
+- : unit = ()
+\end{lstlisting}
+
+In this case, the \passthrough{\lstinline!match!}-based implementation
+is many times faster than the \passthrough{\lstinline!if!}-based
+implementation. The difference comes because we need to effectively do
+the same work multiple times, since each function we call has to
+reexamine the first element of the list to determine whether or not it's
+the empty cell. With a \passthrough{\lstinline!match!} statement, this
+work happens exactly once per list element.
+
+This is a more general phenomena: pattern matching is very efficient,
+and pattern matching code is usually a win over what you might write by
+hand.
+
+\hypertarget{detecting-errors}{%
+\subsubsection{Detecting Errors}\label{detecting-errors}}
+
+The error-detecting capabilities of \passthrough{\lstinline!match!}
+statements are if anything more important than their performance. We've
+already seen one example of OCaml's ability to find problems in a
+pattern match: in our broken implementation of
+\passthrough{\lstinline!drop\_value!}, OCaml warned us that the final
+case was redundant. There are no algorithms for determining if a
+predicate written in a general-purpose language is redundant, but it can
+be solved reliably in the context of
+patterns.\index{match statements}\index{errors/detecting with match
+statements}
+
+OCaml also checks \passthrough{\lstinline!match!} statements for
+exhaustiveness. Consider what happens if we modify
+\passthrough{\lstinline!drop\_zero!} by deleting the handler for one of
+the cases. As you can see, the compiler will produce a warning that
+we've missed a case, along with an example of an unmatched pattern:
+
+\begin{lstlisting}[language=Caml]
+# let rec drop_zero l =
+    match l with
+    | [] -> []
+    | 0  :: tl -> drop_zero tl
+Lines 2-4, characters 5-31:
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a case that is not matched:
+1::_
+val drop_zero : int list -> 'a list = <fun>
+\end{lstlisting}
+
+Even for simple examples like this, exhaustiveness checks are pretty
+useful. But as we'll see in \href{variants.html\#variants}{Variants},
+they become yet more valuable as you get to more complicated examples,
+especially those involving user-defined types. In addition to catching
+outright errors, they act as a sort of refactoring tool, guiding you to
+the locations where you need to adapt your code to deal with changing
+types.~
+
+\hypertarget{using-the-list-module-effectively}{%
+\subsection{Using the List Module
+Effectively}\label{using-the-list-module-effectively}}
+
+We've so far written a fair amount of list-munging code using pattern
+matching and recursive functions. In real life, you're usually better
+off using the \passthrough{\lstinline!List!} module, which is full of
+reusable functions that abstract out common patterns for computing with
+lists.\index{tables, creating with List
+module}\index{List module/creating tables with}\protect\hypertarget{Llistmod}{}{lists/List
+module}
+
+Let's work through a concrete example. We'll write a function
+\passthrough{\lstinline!render\_table!} that, given a list of column
+headers and a list of rows, prints them out in a well-formatted text
+table, as follows:
+
+\begin{lstlisting}[language=Caml]
+# Stdio.print_endline
+    (render_table
+       ["language";"architect";"first release"]
+       [ ["Lisp" ;"John McCarthy" ;"1958"] ;
+         ["C"    ;"Dennis Ritchie";"1969"] ;
+         ["ML"   ;"Robin Milner"  ;"1973"] ;
+         ["OCaml";"Xavier Leroy"  ;"1996"] ;
+  ])
+| language | architect      | first release |
+|----------+----------------+---------------|
+| Lisp     | John McCarthy  | 1958          |
+| C        | Dennis Ritchie | 1969          |
+| ML       | Robin Milner   | 1973          |
+| OCaml    | Xavier Leroy   | 1996          |
+- : unit = ()
+\end{lstlisting}
+
+The first step is to write a function to compute the maximum width of
+each column of data. We can do this by converting the header and each
+row into a list of integer lengths, and then taking the element-wise max
+of those lists of lengths. Writing the code for all of this directly
+would be a bit of a chore, but we can do it quite concisely by making
+use of three functions from the \passthrough{\lstinline!List!} module:
+\passthrough{\lstinline!map!}, \passthrough{\lstinline!map2\_exn!}, and
+\passthrough{\lstinline!fold!}.
+
+\passthrough{\lstinline!List.map!} is the simplest to explain. It takes
+a list and a function for transforming elements of that list, and
+returns a new list with the transformed elements. Thus, we can
+write:\index{List module/List.map}
+
+\begin{lstlisting}[language=Caml]
+# List.map ~f:String.length ["Hello"; "World!"]
+- : int list = [5; 6]
+\end{lstlisting}
+
+\passthrough{\lstinline!List.map2\_exn!} is similar to
+\passthrough{\lstinline!List.map!}, except that it takes two lists and a
+function for combining them. Thus, we might write:\index{List
+module/List.map2\_exn}
+
+\begin{lstlisting}[language=Caml]
+# List.map2_exn ~f:Int.max [1;2;3] [3;2;1]
+- : int list = [3; 2; 3]
+\end{lstlisting}
+
+The \passthrough{\lstinline!\_exn!} is there because the function throws
+an exception if the lists are of mismatched length:
+
+\begin{lstlisting}[language=Caml]
+# List.map2_exn ~f:Int.max [1;2;3] [3;2;1;0]
+Exception: (Invalid_argument "length mismatch in map2_exn: 3 <> 4 ")
+\end{lstlisting}
+
+\passthrough{\lstinline!List.fold!} is the most complicated of the
+three, taking three arguments: a list to process, an initial accumulator
+value, and a function for updating the accumulator.
+\passthrough{\lstinline!List.fold!} walks over the list from left to
+right, updating the accumulator at each step and returning the final
+value of the accumulator when it's done. You can see some of this by
+looking at the type-signature for
+\passthrough{\lstinline!fold!}:\index{List module/List.fold}
+
+\begin{lstlisting}[language=Caml]
+# List.fold
+- : 'a list -> init:'accum -> f:('accum -> 'a -> 'accum) -> 'accum = <fun>
+\end{lstlisting}
+
+We can use \passthrough{\lstinline!List.fold!} for something as simple
+as summing up a list:
+
+\begin{lstlisting}[language=Caml]
+# List.fold ~init:0 ~f:(+) [1;2;3;4]
+- : int = 10
+\end{lstlisting}
+
+This example is particularly simple because the accumulator and the list
+elements are of the same type. But \passthrough{\lstinline!fold!} is not
+limited to such cases. We can for example use
+\passthrough{\lstinline!fold!} to reverse a list, in which case the
+accumulator is itself a list:
+
+\begin{lstlisting}[language=Caml]
+# List.fold ~init:[] ~f:(fun list x -> x :: list) [1;2;3;4]
+- : int list = [4; 3; 2; 1]
+\end{lstlisting}
+
+Let's bring our three functions together to compute the maximum column
+widths:
+
+\begin{lstlisting}[language=Caml]
+# let max_widths header rows =
+    let lengths l = List.map ~f:String.length l in
+    List.fold rows
+      ~init:(lengths header)
+      ~f:(fun acc row ->
+          List.map2_exn ~f:Int.max acc (lengths row))
+val max_widths : string list -> string list list -> int list = <fun>
+\end{lstlisting}
+
+Using \passthrough{\lstinline!List.map!} we define the function
+\passthrough{\lstinline!lengths!}, which converts a list of strings to a
+list of integer lengths. \passthrough{\lstinline!List.fold!} is then
+used to iterate over the rows, using \passthrough{\lstinline!map2\_exn!}
+to take the max of the accumulator with the lengths of the strings in
+each row of the table, with the accumulator initialized to the lengths
+of the header row.
+
+Now that we know how to compute column widths, we can write the code to
+generate the line that separates the header from the rest of the text
+table. We'll do this in part by mapping
+\passthrough{\lstinline!String.make!} over the lengths of the columns to
+generate a string of dashes of the appropriate length. We'll then join
+these sequences of dashes together using
+\passthrough{\lstinline!String.concat!}, which concatenates a list of
+strings with an optional separator string, and
+\passthrough{\lstinline!^!}, which is a pairwise string concatenation
+function, to add the delimiters on the outside:
+
+\begin{lstlisting}[language=Caml]
+# let render_separator widths =
+    let pieces = List.map widths
+        ~f:(fun w -> String.make (w + 2) '-')
+    in
+    "|" ^ String.concat ~sep:"+" pieces ^ "|"
+val render_separator : int list -> string = <fun>
+# render_separator [3;6;2]
+- : string = "|-----+--------+----|"
+\end{lstlisting}
+
+Note that we make the line of dashes two larger than the provided width
+to provide some whitespace around each entry in the
+table.\index{strings/concatenation
+of}\index{String.concat}\index{List module/String.concat and}
+
+\hypertarget{performance-of-string.concat-and}{%
+\subsubsection{Performance of String.concat and
+\^{}}\label{performance-of-string.concat-and}}
+
+In the preceding code we've concatenated strings two different ways:
+\passthrough{\lstinline!String.concat!}, which operates on lists of
+strings; and \passthrough{\lstinline!^!}, which is a pairwise operator.
+You should avoid \passthrough{\lstinline!^!} for joining long numbers of
+strings, since it allocates a new string every time it runs. Thus, the
+following code
+
+\begin{lstlisting}[language=Caml]
+# let s = "." ^ "."  ^ "."  ^ "."  ^ "."  ^ "."  ^ "."
+val s : string = "......."
+\end{lstlisting}
+
+will allocate strings of length 2, 3, 4, 5, 6 and 7, whereas this code
+
+\begin{lstlisting}[language=Caml]
+# let s = String.concat [".";".";".";".";".";".";"."]
+val s : string = "......."
+\end{lstlisting}
+
+allocates one string of size 7, as well as a list of length 7. At these
+small sizes, the differences don't amount to much, but for assembling
+large strings, it can be a serious performance issue.
+
+Now we need code for rendering a row with data in it. We'll first write
+a function called \passthrough{\lstinline!pad!}, for padding out a
+string to a specified length plus one blank space on both
+sides:\index{strings/padding of}
+
+\begin{lstlisting}[language=Caml]
+# let pad s length =
+    " " ^ s ^ String.make (length - String.length s + 1) ' '
+val pad : string -> int -> string = <fun>
+# pad "hello" 10
+- : string = " hello      "
+\end{lstlisting}
+
+We can render a row of data by merging together the padded strings.
+Again, we'll use \passthrough{\lstinline!List.map2\_exn!} for combining
+the list of data in the row with the list of widths:
+
+\begin{lstlisting}[language=Caml]
+# let render_row row widths =
+    let padded = List.map2_exn row widths ~f:pad in
+    "|" ^ String.concat ~sep:"|" padded ^ "|"
+val render_row : string list -> int list -> string = <fun>
+# render_row ["Hello";"World"] [10;15]
+- : string = "| Hello      | World           |"
+\end{lstlisting}
+
+Now we can bring this all together in a single function that renders the
+table:
+
+\begin{lstlisting}[language=Caml]
+# let render_table header rows =
+    let widths = max_widths header rows in
+    String.concat ~sep:"\n"
+      (render_row header widths
+       :: render_separator widths
+       :: List.map rows ~f:(fun row -> render_row row widths)
+      )
+val render_table : string list -> string list list -> string = <fun>
+\end{lstlisting}
+
+\hypertarget{more-useful-list-functions}{%
+\subsubsection{More Useful List
+Functions}\label{more-useful-list-functions}}
+
+The previous example we worked through touched on only three of the
+functions in \passthrough{\lstinline!List!}. We won't cover the entire
+interface (for that you should look at the
+\href{http://realworldocaml.org/doc}{online docs}), but a few more
+functions are useful enough to mention here.
+
+\hypertarget{combining-list-elements-with-list.reduce}{%
+\paragraph{Combining list elements with
+List.reduce}\label{combining-list-elements-with-list.reduce}}
+
+\passthrough{\lstinline!List.fold!}, which we described earlier, is a
+very general and powerful function. Sometimes, however, you want
+something simpler and easier to use. One such function is
+\passthrough{\lstinline!List.reduce!}, which is essentially a
+specialized version of \passthrough{\lstinline!List.fold!} that doesn't
+require an explicit starting value, and whose accumulator has to consume
+and produce values of the same type as the elements of the list it
+applies to.\index{elements/combining with
+List.reduce}\index{List module/List.reduce}\index{lists/combining elements
+in}
+
+Here's the type signature:
+
+\begin{lstlisting}[language=Caml]
+# List.reduce
+- : 'a list -> f:('a -> 'a -> 'a) -> 'a option = <fun>
+\end{lstlisting}
+
+\passthrough{\lstinline!reduce!} returns an optional result, returning
+\passthrough{\lstinline!None!} when the input list is empty.
+
+Now we can see \passthrough{\lstinline!reduce!} in action:
+
+\begin{lstlisting}[language=Caml]
+# List.reduce ~f:(+) [1;2;3;4;5]
+- : int option = Some 15
+# List.reduce ~f:(+) []
+- : int option = None
+\end{lstlisting}
+
+\hypertarget{filtering-with-list.filter-and-list.filter_map}{%
+\paragraph{Filtering with List.filter and
+List.filter\_map}\label{filtering-with-list.filter-and-list.filter_map}}
+
+Very often when processing lists, you wants to restrict your attention
+to a subset of the values on your list. The
+\passthrough{\lstinline!List.filter!} function is one way of doing
+that:\index{lists/filtering values in}\index{values/filtering with
+List.filter}\index{List module/List.filter}
+
+\begin{lstlisting}[language=Caml]
+# List.filter ~f:(fun x -> x % 2 = 0) [1;2;3;4;5]
+- : int list = [2; 4]
+\end{lstlisting}
+
+Note that the \passthrough{\lstinline!mod!} used above is an infix
+operator, as described in
+\href{variables-and-functions.html\#variables-and-functions}{Variables
+And Functions}.
+
+Sometimes, you want to both transform and filter as part of the same
+computation. In that case, \passthrough{\lstinline!List.filter\_map!} is
+what you need. The function passed to
+\passthrough{\lstinline!List.filter\_map!} returns an optional value,
+and \passthrough{\lstinline!List.filter\_map!} drops all elements for
+which \passthrough{\lstinline!None!} is returned.
+
+Here's an example. The following function computes a list of file
+extensions from a list of files, piping the results through
+\passthrough{\lstinline!List.dedup!} to remove duplicates. Note that
+this example uses \passthrough{\lstinline!String.rsplit2!} from the
+String module to split a string on the rightmost appearance of a given
+character:\index{lists/duplicate removal}\index{duplicates, removing}
+
+\begin{lstlisting}[language=Caml]
+# let extensions filenames =
+    List.filter_map filenames ~f:(fun fname ->
+        match String.rsplit2 ~on:'.' fname with
+        | None  | Some ("",_) -> None
+        | Some (_,ext) ->
+          Some ext)
+    |> List.dedup_and_sort ~compare:String.compare
+val extensions : string list -> string list = <fun>
+# extensions ["foo.c"; "foo.ml"; "bar.ml"; "bar.mli"]
+- : string list = ["c"; "ml"; "mli"]
+\end{lstlisting}
+
+The preceding code is also an example of an Or pattern, which allows you
+to have multiple subpatterns within a larger pattern. In this case,
+\passthrough{\lstinline!None | Some ("",\_)!} is an Or pattern. As we'll
+see later, Or patterns can be nested anywhere within larger patterns.
+
+\hypertarget{partitioning-with-list.partition_tf}{%
+\paragraph{Partitioning with
+List.partition\_tf}\label{partitioning-with-list.partition_tf}}
+
+Another useful operation that's closely related to filtering is
+partitioning. The function \passthrough{\lstinline!List.partition\_tf!}
+takes a list and a function for computing a Boolean condition on the
+list elements, and returns two lists. The \passthrough{\lstinline!tf!}
+in the name is a mnemonic to remind the user that
+\passthrough{\lstinline!true!} elements go to the first list and
+\passthrough{\lstinline!false!} ones go to the second. Here's an
+example:\index{elements/partitioning with
+List.partition\_tf}\index{lists/partitioning elements in}\index{List
+module/List.partition\_tf}
+
+\begin{lstlisting}[language=Caml]
+# let is_ocaml_source s =
+    match String.rsplit2 s ~on:'.' with
+    | Some (_,("ml"|"mli")) -> true
+    | _ -> false
+val is_ocaml_source : string -> bool = <fun>
+# let (ml_files,other_files) =
+  List.partition_tf ["foo.c"; "foo.ml"; "bar.ml"; "bar.mli"]  ~f:is_ocaml_source
+val ml_files : string list = ["foo.ml"; "bar.ml"; "bar.mli"]
+val other_files : string list = ["foo.c"]
+\end{lstlisting}
+
+\hypertarget{combining-lists}{%
+\paragraph{Combining lists}\label{combining-lists}}
+
+Another very common operation on lists is concatenation. The
+\passthrough{\lstinline!List!} module actually comes with a few
+different ways of doing this. There's
+\passthrough{\lstinline!List.append!}, for concatenating a pair of
+lists. \index{lists/combining}\index{List module/List.append}
+
+\begin{lstlisting}[language=Caml]
+# List.append [1;2;3] [4;5;6]
+- : int list = [1; 2; 3; 4; 5; 6]
+\end{lstlisting}
+
+There's also \passthrough{\lstinline!@!}, an operator equivalent of
+\passthrough{\lstinline!List.append!}.
+
+\begin{lstlisting}[language=Caml]
+# [1;2;3] @ [4;5;6]
+- : int list = [1; 2; 3; 4; 5; 6]
+\end{lstlisting}
+
+In addition, there is \passthrough{\lstinline!List.concat!}, for
+concatenating a list of lists:
+
+\begin{lstlisting}[language=Caml]
+# List.concat [[1;2];[3;4;5];[6];[]]
+- : int list = [1; 2; 3; 4; 5; 6]
+\end{lstlisting}
+
+Here's an example of using \passthrough{\lstinline!List.concat!} along
+with \passthrough{\lstinline!List.map!} to compute a recursive listing
+of a directory tree.
+
+\begin{lstlisting}[language=Caml]
+# module Sys = Core.Sys
+  module Filename = Core.Filename
+module Sys = Core.Sys
+module Filename = Core.Filename
+# let rec ls_rec s =
+    if Sys.is_file_exn ~follow_symlinks:true s
+    then [s]
+    else
+      Sys.ls_dir s
+      |> List.map ~f:(fun sub -> ls_rec (Filename.concat s sub))
+      |> List.concat
+val ls_rec : string -> string list = <fun>
+\end{lstlisting}
+
+Note that this example uses some functions from the
+\passthrough{\lstinline!Sys!} and \passthrough{\lstinline!Filename!}
+modules from \passthrough{\lstinline!Core!} for accessing the filesystem
+and dealing with filenames.
+
+The preceding combination of \passthrough{\lstinline!List.map!} and
+\passthrough{\lstinline!List.concat!} is common enough that there is a
+function \passthrough{\lstinline!List.concat\_map!} that combines these
+into one, more efficient operation:
+
+\begin{lstlisting}[language=Caml]
+# let rec ls_rec s =
+    if Sys.is_file_exn ~follow_symlinks:true s
+    then [s]
+    else
+      Sys.ls_dir s
+      |> List.concat_map ~f:(fun sub -> ls_rec (Filename.concat s sub))
+val ls_rec : string -> string list = <fun>
+\end{lstlisting}
+
+\hypertarget{tail-recursion}{%
+\subsection{Tail Recursion}\label{tail-recursion}}
+
+The only way to compute the length of an OCaml list is to walk the list
+from beginning to end. As a result, computing the length of a list takes
+time linear in the size of the list. Here's a simple function for doing
+so:\index{List
+module/List.init}\index{lists/computing length of}\index{tail
+recursion}\index{recursion/tail recursion}
+
+\begin{lstlisting}[language=Caml]
+# let rec length = function
+    | [] -> 0
+    | _ :: tl -> 1 + length tl
+val length : 'a list -> int = <fun>
+# length [1;2;3]
+- : int = 3
+\end{lstlisting}
+
+This looks simple enough, but you'll discover that this implementation
+runs into problems on very large lists, as we'll show in the following
+code:
+
+\begin{lstlisting}[language=Caml]
+# let make_list n = List.init n ~f:(fun x -> x)
+val make_list : int -> int list = <fun>
+# length (make_list 10)
+- : int = 10
+# length (make_list 10_000_000)
+Stack overflow during evaluation (looping recursion?).
+\end{lstlisting}
+
+The preceding example creates lists using
+\passthrough{\lstinline!List.init!}, which takes an integer
+\passthrough{\lstinline!n!} and a function \passthrough{\lstinline!f!}
+and creates a list of length \passthrough{\lstinline!n!}, where the data
+for each element is created by calling \passthrough{\lstinline!f!} on
+the index of that element.
+
+To understand where the error in the above example comes from, you need
+to learn a bit more about how function calls work. Typically, a function
+call needs some space to keep track of information associated with the
+call, such as the arguments passed to the function, or the location of
+the code that needs to start executing when the function call is
+complete. To allow for nested function calls, this information is
+typically organized in a stack, where a new \emph{stack frame} is
+allocated for each nested function call, and then deallocated when the
+function call is complete.\index{stack frames}
+
+And that's the problem with our call to
+\passthrough{\lstinline!length!}: it tried to allocate 10 million stack
+frames, which exhausted the available stack space. Happily, there's a
+way around this problem. Consider the following alternative
+implementation:
+
+\begin{lstlisting}[language=Caml]
+# let rec length_plus_n l n =
+    match l with
+    | [] -> n
+    | _ :: tl -> length_plus_n tl (n + 1)
+val length_plus_n : 'a list -> int -> int = <fun>
+# let length l = length_plus_n l 0
+val length : 'a list -> int = <fun>
+# length [1;2;3;4]
+- : int = 4
+\end{lstlisting}
+
+This implementation depends on a helper function,
+\passthrough{\lstinline!length\_plus\_n!}, that computes the length of a
+given list plus a given \passthrough{\lstinline!n!}. In practice,
+\passthrough{\lstinline!n!} acts as an accumulator in which the answer
+is built up, step by step. As a result, we can do the additions along
+the way rather than doing them as we unwind the nested sequence of
+function calls, as we did in our first implementation of
+\passthrough{\lstinline!length!}.
+
+The advantage of this approach is that the recursive call in
+\passthrough{\lstinline!length\_plus\_n!} is a \emph{tail call}. We'll
+explain more precisely what it means to be a tail call shortly, but the
+reason it's important is that tail calls don't require the allocation of
+a new stack frame, due to what is called the \emph{tail-call
+optimization}. A recursive function is said to be \emph{tail recursive}
+if all of its recursive calls are tail calls.
+\passthrough{\lstinline!length\_plus\_n!} is indeed tail recursive, and
+as a result, \passthrough{\lstinline!length!} can take a long list as
+input without blowing the stack:\index{tail calls}
+
+\begin{lstlisting}[language=Caml]
+# length (make_list 10_000_000)
+- : int = 10000000
+\end{lstlisting}
+
+So when is a call a tail call? Let's think about the situation where one
+function (the \emph{caller}) invokes another (the \emph{callee}). The
+invocation is considered a tail call when the caller doesn't do anything
+with the value returned by the callee except to return it. The tail-call
+optimization makes sense because, when a caller makes a tail call, the
+caller's stack frame need never be used again, and so you don't need to
+keep it around. Thus, instead of allocating a new stack frame for the
+callee, the compiler is free to reuse the caller's stack frame.
+
+Tail recursion is important for more than just lists. Ordinary nontail
+recursive calls are reasonable when dealing with data structures like
+binary trees, where the depth of the tree is logarithmic in the size of
+your data. But when dealing with situations where the depth of the
+sequence of nested calls is on the order of the size of your data, tail
+recursion is usually the right approach.
+
+\hypertarget{terser-and-faster-patterns}{%
+\subsection{Terser and Faster
+Patterns}\label{terser-and-faster-patterns}}
+
+Now that we know more about how lists and patterns work, let's consider
+how we can improve on an example from
+\href{guided-tour.html\#recursive-list-functions}{Recursive List
+Functions}: the function \passthrough{\lstinline!destutter!}, which
+removes sequential duplicates from a list. Here's the implementation
+that was described earlier:\index{destutter
+function}\protect\hypertarget{PTTRNMAT}{}{pattern matching/terser and
+faster patterns}\index{lists/duplicate removal}\index{duplicates,
+removing}
+
+\begin{lstlisting}[language=Caml]
+# let rec destutter list =
+    match list with
+    | [] -> []
+    | [hd] -> [hd]
+    | hd :: hd' :: tl ->
+      if hd = hd' then destutter (hd' :: tl)
+      else hd :: destutter (hd' :: tl)
+val destutter : int list -> int list = <fun>
+\end{lstlisting}
+
+We'll consider some ways of making this code more concise and more
+efficient.
+
+First, let's consider efficiency. One problem with the
+\passthrough{\lstinline!destutter!} code above is that it in some cases
+re-creates on the righthand side of the arrow a value that already
+existed on the lefthand side. Thus, the pattern
+\passthrough{\lstinline![hd] -> [hd]!} actually allocates a new list
+element, when really, it should be able to just return the list being
+matched. We can reduce allocation here by using an
+\passthrough{\lstinline!as!} pattern, which allows us to declare a name
+for the thing matched by a pattern or subpattern. While we're at it,
+we'll use the \passthrough{\lstinline!function!} keyword to eliminate
+the need for an explicit match:\index{function
+keyword}
+
+\begin{lstlisting}[language=Caml]
+# let rec destutter = function
+    | [] as l -> l
+    | [_] as l -> l
+    | hd :: (hd' :: _ as tl) ->
+      if hd = hd' then destutter tl
+      else hd :: destutter tl
+val destutter : int list -> int list = <fun>
+\end{lstlisting}
+
+We can further collapse this by combining the first two cases into one,
+using an \emph{or pattern}:
+
+\begin{lstlisting}[language=Caml]
+# let rec destutter = function
+    | [] | [_] as l -> l
+    | hd :: (hd' :: _ as tl) ->
+      if hd = hd' then destutter tl
+      else hd :: destutter tl
+val destutter : int list -> int list = <fun>
+\end{lstlisting}
+
+We can make the code slightly terser now by using a
+\passthrough{\lstinline!when!} clause. A \passthrough{\lstinline!when!}
+clause allows us to add an extra precondition to a pattern in the form
+of an arbitrary OCaml expression. In this case, we can use it to include
+the check on whether the first two elements are equal:
+
+\begin{lstlisting}[language=Caml]
+# let rec destutter = function
+    | [] | [_] as l -> l
+    | hd :: (hd' :: _ as tl) when hd = hd' -> destutter tl
+    | hd :: tl -> hd :: destutter tl
+val destutter : int list -> int list = <fun>
+\end{lstlisting}
+
+\hypertarget{polymorphic-compare}{%
+\subparagraph{Polymorphic Compare}\label{polymorphic-compare}}
+
+You might have noticed that \passthrough{\lstinline!destutter!} is
+specialized to lists of integers. That's because
+\passthrough{\lstinline!Base!}'s default equality operator is
+specialized to integers, as you can see if you try to apply it to values
+of a different type.
+
+\begin{lstlisting}[language=Caml]
+# "foo" = "bar"
+Line 1, characters 1-6:
+Error: This expression has type string but an expression was expected of type
+         int
+\end{lstlisting}
+
+OCaml also has a collection of polymorphic equality and comparison
+operators, which we can make available by opening the module
+\passthrough{\lstinline!Base.Poly!}.
+
+\begin{lstlisting}[language=Caml]
+# open Base.Poly
+# "foo" = "bar"
+- : bool = false
+# 3 = 4
+- : bool = false
+# [1;2;3] = [1;2;3]
+- : bool = true
+\end{lstlisting}
+
+Indeed, if we look at the type of the equality operator, we'll see that
+it is polymorphic.
+
+\begin{lstlisting}[language=Caml]
+# (=)
+- : 'a -> 'a -> bool = <fun>
+\end{lstlisting}
+
+If we rewrite our destutter example with
+\passthrough{\lstinline!Base.Poly!} open, we'll see that it gets a
+polymorphic type, and can now be used on inputs of different types.
+
+\begin{lstlisting}[language=Caml]
+# let rec destutter = function
+    | [] | [_] as l -> l
+    | hd :: (hd' :: _ as tl) when hd = hd' -> destutter tl
+    | hd :: tl -> hd :: destutter tl
+val destutter : 'a list -> 'a list = <fun>
+# destutter [1;2;2;3;4;3;3]
+- : int list = [1; 2; 3; 4; 3]
+# destutter ["one";"two";"two";"two";"three"]
+- : string list = ["one"; "two"; "three"]
+\end{lstlisting}
+
+OCaml comes with a whole family of polymorphic comparison operators,
+including the standard infix comparators, \passthrough{\lstinline!<!},
+\passthrough{\lstinline!>=!}, etc., as well as the function
+\passthrough{\lstinline!compare!} that returns
+\passthrough{\lstinline!-1!}, \passthrough{\lstinline!0!}, or
+\passthrough{\lstinline!1!} to flag whether the first operand is smaller
+than, equal to, or greater than the second, respectively.
+
+You might wonder how you could build functions like these yourself if
+OCaml didn't come with them built in. It turns out that you \emph{can't}
+build these functions on your own. OCaml's polymorphic comparison
+functions are built into the runtime to a low level. These comparisons
+are polymorphic on the basis of ignoring almost everything about the
+types of the values that are being compared, paying attention only to
+the structure of the values as they're laid out in memory. (You can
+learn more about this structure in
+\href{runtime-memory-layout.html}{Memory Representation of Values}.)
+
+Polymorphic compare does have some limitations. For example, it will
+fail at runtime if it encounters a function value.
+
+\begin{lstlisting}[language=Caml]
+# (fun x -> x + 1) = (fun x -> x + 1)
+Exception: (Invalid_argument "compare: functional value")
+\end{lstlisting}
+
+Similarly, it will fail on values that come from outside the OCaml heap,
+like values from C bindings. But it will work in a reasonable way for
+most other kinds of values.
+
+For simple atomic types, polymorphic compare has the semantics you would
+expect: for floating-point numbers and integers, polymorphic compare
+corresponds to the expected numerical comparison functions. For strings,
+it's a lexicographic comparison.
+
+That said, experienced OCaml developers typically avoid polymorphic
+comparison. That's surprising, given how obviously useful is, but
+there's a good reason. While it's very convenient, in some cases, the
+type oblivious nature of polymorphic compare means that it does
+something that doesn't make sense for the particular type of values
+you're dealing with. This can lead to surprising and hard to resolve
+bugs in your code. It's for this reason that
+\passthrough{\lstinline!Base!} discourages the use of polymorphic
+compare by hiding it by default.
+
+We'll discuss this issue more in
+\href{maps-and-hashtables.html\#maps-and-hash-tables}{Maps And Hash
+Tables}. But in any case, you can restore the default behavior of
+\passthrough{\lstinline!Base!} by opening the module again.
+
+\begin{lstlisting}[language=Caml]
+# open Base
+\end{lstlisting}
+
+Note that \passthrough{\lstinline!when!} clauses have some downsides. As
+we noted earlier, the static checks associated with pattern matches rely
+on the fact that patterns are restricted in what they can express. Once
+we add the ability to add an arbitrary condition to a pattern, something
+is lost. In particular, the ability of the compiler to determine if a
+match is exhaustive, or if some case is redundant, is compromised.
+
+Consider the following function, which takes a list of optional values,
+and returns the number of those values that are
+\passthrough{\lstinline!Some!}. Because this implementation uses
+\passthrough{\lstinline!when!} clauses, the compiler can't tell that the
+code is exhaustive:
+
+\begin{lstlisting}[language=Caml]
+# let rec count_some list =
+    match list with
+    | [] -> 0
+    | x :: tl when Option.is_none x -> count_some tl
+    | x :: tl when Option.is_some x -> 1 + count_some tl
+Lines 2-5, characters 5-57:
+Warning 8: this pattern-matching is not exhaustive.
+Here is an example of a case that is not matched:
+_::_
+(However, some guarded clause may match this value.)
+val count_some : 'a option list -> int = <fun>
+\end{lstlisting}
+
+Despite the warning, the function does work fine:
+
+\begin{lstlisting}[language=Caml]
+# count_some [Some 3; None; Some 4]
+- : int = 2
+\end{lstlisting}
+
+If we add another redundant case without a
+\passthrough{\lstinline!when!} clause, the compiler will stop
+complaining about exhaustiveness and won't produce a warning about the
+redundancy.
+
+\begin{lstlisting}[language=Caml]
+# let rec count_some list =
+    match list with
+    | [] -> 0
+    | x :: tl when Option.is_none x -> count_some tl
+    | x :: tl when Option.is_some x -> 1 + count_some tl
+    | x :: tl -> -1 (* unreachable *)
+val count_some : 'a option list -> int = <fun>
+\end{lstlisting}
+
+Probably a better approach is to simply drop the second
+\passthrough{\lstinline!when!} clause:
+
+\begin{lstlisting}[language=Caml]
+# let rec count_some list =
+    match list with
+    | [] -> 0
+    | x :: tl when Option.is_none x -> count_some tl
+    | _ :: tl -> 1 + count_some tl
+val count_some : 'a option list -> int = <fun>
+\end{lstlisting}
+
+This is a little less clear, however, than the direct pattern-matching
+solution, where the meaning of each pattern is clearer on its own:
+
+\begin{lstlisting}[language=Caml]
+# let rec count_some list =
+    match list with
+    | [] -> 0
+    | None   :: tl -> count_some tl
+    | Some _ :: tl -> 1 + count_some tl
+val count_some : 'a option list -> int = <fun>
+\end{lstlisting}
+
+The takeaway from all of this is although \passthrough{\lstinline!when!}
+clauses can be useful, we should prefer patterns wherever they are
+sufficient.
+
+As a side note, the above implementation of
+\passthrough{\lstinline!count\_some!} is longer than necessary; even
+worse, it is not tail recursive. In real life, you would probably just
+use the \passthrough{\lstinline!List.count!} function from
+\passthrough{\lstinline!Core\_kernel!}:
+
+\begin{lstlisting}[language=Caml]
+# let count_some l = List.count ~f:Option.is_some l
+val count_some : 'a option list -> int = <fun>
+\end{lstlisting}

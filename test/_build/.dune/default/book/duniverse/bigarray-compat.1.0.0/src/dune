@@ -1,0 +1,1 @@
+(library (name bigarray_compat) (public_name bigarray-compat) (modules bigarray_compat) (wrapped false)) (rule (targets bigarray_compat.ml) (action (copy bigarray_stdlib.ml bigarray_compat.ml)))

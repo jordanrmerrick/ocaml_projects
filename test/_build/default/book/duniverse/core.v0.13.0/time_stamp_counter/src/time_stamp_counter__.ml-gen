@@ -1,0 +1,2 @@
+(** @canonical Time_stamp_counter.Import *)
+module Import = Time_stamp_counter__Import

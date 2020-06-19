@@ -1,0 +1,1 @@
+book/duniverse/core_kernel.v0.13.0/src/float_with_finite_only_serialization.pp.ml: Binable Caml Expect_test_collector Float Import Ppx_bench_lib Ppx_compare_lib Ppx_hash_lib Ppx_inline_test_lib Ppx_sexp_conv_lib Sexp Stable_internal

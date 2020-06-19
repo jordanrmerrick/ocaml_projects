@@ -1,0 +1,26 @@
+(** @canonical Rwo.About *)
+module About = Rwo__About
+
+(** @canonical Rwo.Book *)
+module Book = Rwo__Book
+
+(** @canonical Rwo.Html *)
+module Html = Rwo__Html
+
+(** @canonical Rwo.Index *)
+module Index = Rwo__Index
+
+(** @canonical Rwo.References *)
+module References = Rwo__References
+
+(** @canonical Rwo.Tex *)
+module Tex = Rwo__Tex
+
+(** @canonical Rwo.Toc *)
+module Toc = Rwo__Toc
+
+(** @canonical Rwo.Toc_tex *)
+module Toc_tex = Rwo__Toc_tex
+
+(** @canonical Rwo.Util *)
+module Util = Rwo__Util

@@ -1,0 +1,6 @@
+# dune build exponentiation.ml
+# OCAMLPARAM: unset
+# Workspace root: /Users/jordanmerrick/Programming/OCaml
+$ /usr/local/bin/nproc > /var/folders/cx/6_d4dpnx0dq21qgrc2l2tf6h0000gn/T/dune544379.output 2> /dev/null
+# Auto-detected concurrency: 4
+# disable binary cache

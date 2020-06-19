@@ -1,0 +1,8 @@
+EXCLUDE_QUERY_DIR
+B /Users/jordanmerrick/.opam/default/lib/ocaml
+B ../../../../../_build/default/book/duniverse/dune-configurator.2.0.1/src/stdune/.stdune.objs/byte
+B ../../../../../_build/default/book/duniverse/dune-configurator.2.0.1/src/stdune/caml/.dune_caml.objs/byte
+S /Users/jordanmerrick/.opam/default/lib/ocaml
+S .
+S caml
+FLG -open Stdune__ -w @1..3@5..28@30..39@43@46..47@49..57@61..62-40 -strict-sequence -strict-formats -short-paths -keep-locs -w -a

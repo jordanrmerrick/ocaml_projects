@@ -1,0 +1,4 @@
+(executables
+  (names hello_world)
+  (libraries base stdio)
+  )

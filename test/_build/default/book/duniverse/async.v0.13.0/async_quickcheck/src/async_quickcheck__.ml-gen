@@ -1,0 +1,2 @@
+(** @canonical Async_quickcheck.Async_quickcheck_intf *)
+module Async_quickcheck_intf = Async_quickcheck__Async_quickcheck_intf

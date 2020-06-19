@@ -1,0 +1,11 @@
+(** @canonical Async_rpc.Import *)
+module Import = Async_rpc__Import
+
+(** @canonical Async_rpc.Rpc *)
+module Rpc = Async_rpc__Rpc
+
+(** @canonical Async_rpc.Rpc_transport *)
+module Rpc_transport = Async_rpc__Rpc_transport
+
+(** @canonical Async_rpc.Rpc_transport_low_latency *)
+module Rpc_transport_low_latency = Async_rpc__Rpc_transport_low_latency

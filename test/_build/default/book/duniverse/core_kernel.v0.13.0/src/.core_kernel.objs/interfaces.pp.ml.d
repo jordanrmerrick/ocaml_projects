@@ -1,0 +1,1 @@
+book/duniverse/core_kernel.v0.13.0/src/interfaces.pp.ml: Applicative Binable0 Comparable Expect_test_collector Floatable Hashable Identifiable Import Intable Monad Ppx_bench_lib Ppx_inline_test_lib Quickcheckable Robustly_comparable Sexpable Stable_int63able Stable_module_types Stringable Unit
