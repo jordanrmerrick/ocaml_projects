@@ -1,0 +1,2 @@
+(** @canonical Error_checking_mutex.Import *)
+module Import = Error_checking_mutex__Import

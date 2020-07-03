@@ -1,0 +1,4 @@
+(executable
+  (name ccv)
+  (libraries base stdio)
+)

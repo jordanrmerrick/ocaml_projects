@@ -1,0 +1,7 @@
+open Base
+open Stdio
+
+let cc_validation ccnum =
+  let int_to_char_list i = String.to_list (Int.to_string i)
+  in
+  List.length (int_to_char_list ccnum)

@@ -1,0 +1,5 @@
+(** @canonical Timing_wheel.Import *)
+module Import = Timing_wheel__Import
+
+(** @canonical Timing_wheel.Timing_wheel_intf *)
+module Timing_wheel_intf = Timing_wheel__Timing_wheel_intf

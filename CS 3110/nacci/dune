@@ -1,0 +1,4 @@
+(executable
+  (name nacci)
+  (libraries base stdio)
+)

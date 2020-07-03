@@ -1,0 +1,16 @@
+EXCLUDE_QUERY_DIR
+B /Users/jordanmerrick/.opam/rwo/lib/base
+B /Users/jordanmerrick/.opam/rwo/lib/base/base_internalhash_types
+B /Users/jordanmerrick/.opam/rwo/lib/base/caml
+B /Users/jordanmerrick/.opam/rwo/lib/base/shadow_stdlib
+B /Users/jordanmerrick/.opam/rwo/lib/sexplib0
+B /Users/jordanmerrick/.opam/rwo/lib/stdio
+B _build/default/.exponentiation.eobjs/byte
+S /Users/jordanmerrick/.opam/rwo/lib/base
+S /Users/jordanmerrick/.opam/rwo/lib/base/base_internalhash_types
+S /Users/jordanmerrick/.opam/rwo/lib/base/caml
+S /Users/jordanmerrick/.opam/rwo/lib/base/shadow_stdlib
+S /Users/jordanmerrick/.opam/rwo/lib/sexplib0
+S /Users/jordanmerrick/.opam/rwo/lib/stdio
+S .
+FLG -w @1..3@5..28@30..39@43@46..47@49..57@61..62-40 -strict-sequence -strict-formats -short-paths -keep-locs

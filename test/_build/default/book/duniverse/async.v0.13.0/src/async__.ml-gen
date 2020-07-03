@@ -1,0 +1,5 @@
+(** @canonical Async.Deferred_or_error_expect_test_config *)
+module Deferred_or_error_expect_test_config = Async__Deferred_or_error_expect_test_config
+
+(** @canonical Async.Expect_test_config_with_unit_expect *)
+module Expect_test_config_with_unit_expect = Async__Expect_test_config_with_unit_expect

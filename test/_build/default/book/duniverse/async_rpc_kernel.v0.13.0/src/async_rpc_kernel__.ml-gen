@@ -1,0 +1,53 @@
+(** @canonical Async_rpc_kernel.Connection *)
+module Connection = Async_rpc_kernel__Connection
+
+(** @canonical Async_rpc_kernel.Connection_intf *)
+module Connection_intf = Async_rpc_kernel__Connection_intf
+
+(** @canonical Async_rpc_kernel.Description *)
+module Description = Async_rpc_kernel__Description
+
+(** @canonical Async_rpc_kernel.Implementation *)
+module Implementation = Async_rpc_kernel__Implementation
+
+(** @canonical Async_rpc_kernel.Implementation_types *)
+module Implementation_types = Async_rpc_kernel__Implementation_types
+
+(** @canonical Async_rpc_kernel.Implementations *)
+module Implementations = Async_rpc_kernel__Implementations
+
+(** @canonical Async_rpc_kernel.Nat0 *)
+module Nat0 = Async_rpc_kernel__Nat0
+
+(** @canonical Async_rpc_kernel.Persistent_connection *)
+module Persistent_connection = Async_rpc_kernel__Persistent_connection
+
+(** @canonical Async_rpc_kernel.Pipe_transport *)
+module Pipe_transport = Async_rpc_kernel__Pipe_transport
+
+(** @canonical Async_rpc_kernel.Protocol *)
+module Protocol = Async_rpc_kernel__Protocol
+
+(** @canonical Async_rpc_kernel.Rpc *)
+module Rpc = Async_rpc_kernel__Rpc
+
+(** @canonical Async_rpc_kernel.Rpc_error *)
+module Rpc_error = Async_rpc_kernel__Rpc_error
+
+(** @canonical Async_rpc_kernel.Rpc_result *)
+module Rpc_result = Async_rpc_kernel__Rpc_result
+
+(** @canonical Async_rpc_kernel.Transport *)
+module Transport = Async_rpc_kernel__Transport
+
+(** @canonical Async_rpc_kernel.Transport_intf *)
+module Transport_intf = Async_rpc_kernel__Transport_intf
+
+(** @canonical Async_rpc_kernel.Util *)
+module Util = Async_rpc_kernel__Util
+
+(** @canonical Async_rpc_kernel.Versioned_rpc *)
+module Versioned_rpc = Async_rpc_kernel__Versioned_rpc
+
+(** @canonical Async_rpc_kernel.Writer_with_length *)
+module Writer_with_length = Async_rpc_kernel__Writer_with_length
