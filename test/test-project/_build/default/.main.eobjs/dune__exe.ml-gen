@@ -1,0 +1,8 @@
+(** @canonical Dune__exe.Factorial *)
+module Factorial = Dune__exe__Factorial
+
+(** @canonical Dune__exe.Main *)
+module Main = Dune__exe__Main
+
+(** @canonical Dune__exe.Test *)
+module Test = Dune__exe__Test
