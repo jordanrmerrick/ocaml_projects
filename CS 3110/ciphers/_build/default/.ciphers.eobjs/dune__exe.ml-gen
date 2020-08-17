@@ -1,0 +1,8 @@
+(** @canonical Dune__exe.Caesar *)
+module Caesar = Dune__exe__Caesar
+
+(** @canonical Dune__exe.Ciphers *)
+module Ciphers = Dune__exe__Ciphers
+
+(** @canonical Dune__exe.Vignere *)
+module Vignere = Dune__exe__Vignere

@@ -1,1 +1,0 @@
-book/duniverse/core_kernel.v0.13.0/src/float.pp.ml: Base Base_quickcheck Bin_prot Caml Comparable Comparisons Expect_test_collector Hashable Import Poly Ppx_bench_lib Ppx_inline_test_lib Robustly_comparable Sign String Typerep_lib

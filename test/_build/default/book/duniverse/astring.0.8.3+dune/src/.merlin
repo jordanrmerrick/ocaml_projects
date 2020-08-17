@@ -1,7 +1,0 @@
-EXCLUDE_QUERY_DIR
-B /Users/jordanmerrick/.opam/default/lib/ocaml/compiler-libs
-B ../../../../_build/default/book/duniverse/astring.0.8.3+dune/src/.astring.objs/byte
-B ../../../../_build/default/book/duniverse/astring.0.8.3+dune/src/.astring_top.objs/byte
-S /Users/jordanmerrick/.opam/default/lib/ocaml/compiler-libs
-S .
-FLG -w @1..3@5..28@30..39@43@46..47@49..57@61..62-40 -strict-sequence -strict-formats -short-paths -keep-locs -w -27 -w -a -w @1..3@5..28@30..39@43@46..47@49..57@61..62-40 -strict-sequence -strict-formats -short-paths -keep-locs -w -a

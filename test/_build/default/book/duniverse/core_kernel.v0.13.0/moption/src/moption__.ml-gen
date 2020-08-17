@@ -1,2 +1,0 @@
-(** @canonical Moption.Import *)
-module Import = Moption__Import

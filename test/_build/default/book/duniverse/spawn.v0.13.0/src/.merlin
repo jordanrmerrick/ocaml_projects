@@ -1,8 +1,0 @@
-EXCLUDE_QUERY_DIR
-B /Users/jordanmerrick/.opam/default/lib/ocaml
-B /Users/jordanmerrick/.opam/default/lib/ocaml/threads
-B ../../../../_build/default/book/duniverse/spawn.v0.13.0/src/.spawn.objs/byte
-S /Users/jordanmerrick/.opam/default/lib/ocaml
-S /Users/jordanmerrick/.opam/default/lib/ocaml/threads
-S .
-FLG -w @1..3@5..28@30..39@43@46..47@49..57@61..62-40 -strict-sequence -strict-formats -short-paths -keep-locs -w -a

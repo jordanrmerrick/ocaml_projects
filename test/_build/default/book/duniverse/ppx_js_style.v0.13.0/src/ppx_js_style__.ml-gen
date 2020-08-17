@@ -1,2 +1,0 @@
-(** @canonical Ppx_js_style.In_janestreet *)
-module In_janestreet = Ppx_js_style__In_janestreet

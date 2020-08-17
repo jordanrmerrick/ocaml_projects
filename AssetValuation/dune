@@ -1,0 +1,4 @@
+(executable
+  (name bottomupbeta)
+  (libraries core stdio)
+)

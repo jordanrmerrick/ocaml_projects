@@ -1,2 +1,0 @@
-(** @canonical Squeue.Import *)
-module Import = Squeue__Import

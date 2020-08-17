@@ -1,0 +1,4 @@
+(executable
+  (name arithmetic)
+  (libraries base stdio)
+)

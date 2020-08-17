@@ -1,1 +1,0 @@
-book/duniverse/core_kernel.v0.13.0/src/import.pp.ml: Base Base_for_tests Bin_prot Caml Expect_test_collector Fieldslib Ppx_bench_lib Ppx_hash_lib Ppx_inline_test_lib Ppx_sexp_conv_lib Sexplib Stdio Typerep_lib Variantslib

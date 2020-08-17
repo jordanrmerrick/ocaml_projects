@@ -1,1 +1,0 @@
-let cppo_version = ""

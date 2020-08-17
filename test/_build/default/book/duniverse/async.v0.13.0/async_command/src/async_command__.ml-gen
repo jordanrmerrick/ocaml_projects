@@ -1,2 +1,0 @@
-(** @canonical Async_command.Import *)
-module Import = Async_command__Import

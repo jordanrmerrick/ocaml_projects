@@ -1,2 +1,0 @@
-(** @canonical Persistent_connection_kernel.Persistent_connection_kernel_intf *)
-module Persistent_connection_kernel_intf = Persistent_connection_kernel__Persistent_connection_kernel_intf

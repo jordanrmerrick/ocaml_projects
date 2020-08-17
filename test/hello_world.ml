@@ -1,11 +1,5 @@
-open Base
 open Stdio
 
-let rec sum ls =
-  match ls with
-  | [] -> 0
-  | first :: rest -> first + sum rest
+module Hn = Hn
 
-
-let () =
-  printf "Total: %i\n" (sum [1])
+let () = printf "%i\n" (Hn.sum [1;2;3;4])

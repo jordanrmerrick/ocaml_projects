@@ -1,0 +1,4 @@
+(executable
+  (name duckduckgo)
+  (libraries core async cohttp cohttp-async textwrap yojson)
+)

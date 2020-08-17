@@ -1,4 +1,0 @@
-(executable
-  (name exercises_one)
-  (libraries base stdio)
-)

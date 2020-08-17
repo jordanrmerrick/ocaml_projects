@@ -1,0 +1,4 @@
+(executable
+  (name ciphers)
+  (libraries base stdio)
+)

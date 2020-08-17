@@ -1,0 +1,113 @@
+# dune exec ./arithmetic.exe
+# OCAMLPARAM: unset
+# Workspace root: "/Users/jordanmerrick/Programming/OCaml/CS 3110/math"
+$ /usr/local/bin/nproc > /var/folders/cx/6_d4dpnx0dq21qgrc2l2tf6h0000gn/T/dune7dffbf.output 2> /dev/null
+# Auto-detected concurrency: 4
+# disable binary cache
+$ /Users/jordanmerrick/.opam/rwo/bin/ocamlc.opt -config > /var/folders/cx/6_d4dpnx0dq21qgrc2l2tf6h0000gn/T/dune58989a.output
+# Dune context:
+#  { name = "default"
+#  ; kind = "default"
+#  ; profile = Dyn
+#  ; merlin = true
+#  ; for_host = None
+#  ; fdo_target_exe = None
+#  ; build_dir = "default"
+#  ; toplevel_path =
+#      Some External "/Users/jordanmerrick/.opam/rwo/lib/toplevel"
+#  ; ocaml_bin = External "/Users/jordanmerrick/.opam/rwo/bin"
+#  ; ocaml = Ok External "/Users/jordanmerrick/.opam/rwo/bin/ocaml"
+#  ; ocamlc = External "/Users/jordanmerrick/.opam/rwo/bin/ocamlc.opt"
+#  ; ocamlopt = Ok External "/Users/jordanmerrick/.opam/rwo/bin/ocamlopt.opt"
+#  ; ocamldep = Ok External "/Users/jordanmerrick/.opam/rwo/bin/ocamldep.opt"
+#  ; ocamlmklib =
+#      Ok External "/Users/jordanmerrick/.opam/rwo/bin/ocamlmklib.opt"
+#  ; env =
+#      map
+#        { "INSIDE_DUNE" :
+#            "/Users/jordanmerrick/Programming/OCaml/CS 3110/math/_build/default"
+#        ; "MANPATH" :
+#            "/Users/jordanmerrick/Programming/OCaml/CS 3110/math/_build/install/default/bin"
+#        ; "OCAMLFIND_IGNORE_DUPS_IN" :
+#            "/Users/jordanmerrick/Programming/OCaml/CS 3110/math/_build/install/default/lib"
+#        ; "OCAMLPATH" :
+#            "/Users/jordanmerrick/Programming/OCaml/CS 3110/math/_build/install/default/lib"
+#        ; "OCAMLTOP_INCLUDE_PATH" :
+#            "/Users/jordanmerrick/Programming/OCaml/CS 3110/math/_build/install/default/lib/toplevel"
+#        ; "OCAML_COLOR" : "always"
+#        ; "OPAMCOLOR" : "always"
+#        }
+#  ; findlib_path = [ External "/Users/jordanmerrick/.opam/rwo/lib" ]
+#  ; arch_sixtyfour = true
+#  ; natdynlink_supported = true
+#  ; supports_shared_libraries = true
+#  ; ocaml_config =
+#      { version = "4.09.0"
+#      ; standard_library_default = "/Users/jordanmerrick/.opam/rwo/lib/ocaml"
+#      ; standard_library = "/Users/jordanmerrick/.opam/rwo/lib/ocaml"
+#      ; standard_runtime = "the_standard_runtime_variable_was_deleted"
+#      ; ccomp_type = "cc"
+#      ; c_compiler = "cc"
+#      ; ocamlc_cflags = [ "-O2"; "-fno-strict-aliasing"; "-fwrapv" ]
+#      ; ocamlopt_cflags = [ "-O2"; "-fno-strict-aliasing"; "-fwrapv" ]
+#      ; bytecomp_c_compiler =
+#          [ "cc"
+#          ; "-O2"
+#          ; "-fno-strict-aliasing"
+#          ; "-fwrapv"
+#          ; "-D_FILE_OFFSET_BITS=64"
+#          ; "-D_REENTRANT"
+#          ]
+#      ; bytecomp_c_libraries = [ "-lm"; "-lpthread" ]
+#      ; native_c_compiler =
+#          [ "cc"
+#          ; "-O2"
+#          ; "-fno-strict-aliasing"
+#          ; "-fwrapv"
+#          ; "-D_FILE_OFFSET_BITS=64"
+#          ; "-D_REENTRANT"
+#          ]
+#      ; native_c_libraries = [ "-lm" ]
+#      ; cc_profile = []
+#      ; architecture = "amd64"
+#      ; model = "default"
+#      ; int_size = 63
+#      ; word_size = 64
+#      ; system = "macosx"
+#      ; asm = [ "clang"; "-arch"; "x86_64"; "-Wno-trigraphs"; "-c" ]
+#      ; asm_cfi_supported = true
+#      ; with_frame_pointers = false
+#      ; ext_exe = ""
+#      ; ext_obj = ".o"
+#      ; ext_asm = ".s"
+#      ; ext_lib = ".a"
+#      ; ext_dll = ".so"
+#      ; os_type = "Unix"
+#      ; default_executable_name = "a.out"
+#      ; systhread_supported = true
+#      ; host = "x86_64-apple-darwin18.7.0"
+#      ; target = "x86_64-apple-darwin18.7.0"
+#      ; profiling = false
+#      ; flambda = false
+#      ; spacetime = false
+#      ; safe_string = false
+#      ; exec_magic_number = "Caml1999X026"
+#      ; cmi_magic_number = "Caml1999I026"
+#      ; cmo_magic_number = "Caml1999O026"
+#      ; cma_magic_number = "Caml1999A026"
+#      ; cmx_magic_number = "Caml1999Y026"
+#      ; cmxa_magic_number = "Caml1999Z026"
+#      ; ast_impl_magic_number = "Caml1999M026"
+#      ; ast_intf_magic_number = "Caml1999N026"
+#      ; cmxs_magic_number = "Caml1999D026"
+#      ; cmt_magic_number = "Caml1999T026"
+#      ; natdynlink_supported = true
+#      ; supports_shared_libraries = true
+#      ; windows_unicode = false
+#      }
+#  }
+# Workspace root: "/Users/jordanmerrick/Programming/OCaml/CS 3110/math"
+$ (cd _build/default && /Users/jordanmerrick/.opam/rwo/bin/ocamldep.opt -modules -impl arithmetic.ml) > _build/default/.arithmetic.eobjs/arithmetic.ml.d
+$ (cd _build/default && /Users/jordanmerrick/.opam/rwo/bin/ocamlc.opt -w @1..3@5..28@30..39@43@46..47@49..57@61..62-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -bin-annot -I .arithmetic.eobjs/byte -I /Users/jordanmerrick/.opam/rwo/lib/base -I /Users/jordanmerrick/.opam/rwo/lib/base/base_internalhash_types -I /Users/jordanmerrick/.opam/rwo/lib/base/caml -I /Users/jordanmerrick/.opam/rwo/lib/base/shadow_stdlib -I /Users/jordanmerrick/.opam/rwo/lib/sexplib0 -I /Users/jordanmerrick/.opam/rwo/lib/stdio -no-alias-deps -opaque -o .arithmetic.eobjs/byte/dune__exe__Arithmetic.cmo -c -impl arithmetic.ml)
+$ (cd _build/default && /Users/jordanmerrick/.opam/rwo/bin/ocamlopt.opt -w @1..3@5..28@30..39@43@46..47@49..57@61..62-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -I .arithmetic.eobjs/byte -I .arithmetic.eobjs/native -I /Users/jordanmerrick/.opam/rwo/lib/base -I /Users/jordanmerrick/.opam/rwo/lib/base/base_internalhash_types -I /Users/jordanmerrick/.opam/rwo/lib/base/caml -I /Users/jordanmerrick/.opam/rwo/lib/base/shadow_stdlib -I /Users/jordanmerrick/.opam/rwo/lib/sexplib0 -I /Users/jordanmerrick/.opam/rwo/lib/stdio -intf-suffix .ml -no-alias-deps -opaque -o .arithmetic.eobjs/native/dune__exe__Arithmetic.cmx -c -impl arithmetic.ml)
+$ (cd _build/default && /Users/jordanmerrick/.opam/rwo/bin/ocamlopt.opt -w @1..3@5..28@30..39@43@46..47@49..57@61..62-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -o arithmetic.exe /Users/jordanmerrick/.opam/rwo/lib/base/base_internalhash_types/base_internalhash_types.cmxa -I /Users/jordanmerrick/.opam/rwo/lib/base/base_internalhash_types /Users/jordanmerrick/.opam/rwo/lib/base/caml/caml.cmxa /Users/jordanmerrick/.opam/rwo/lib/sexplib0/sexplib0.cmxa /Users/jordanmerrick/.opam/rwo/lib/base/shadow_stdlib/shadow_stdlib.cmxa /Users/jordanmerrick/.opam/rwo/lib/base/base.cmxa -I /Users/jordanmerrick/.opam/rwo/lib/base /Users/jordanmerrick/.opam/rwo/lib/stdio/stdio.cmxa .arithmetic.eobjs/native/dune__exe__Arithmetic.cmx)

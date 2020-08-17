@@ -1,1 +1,0 @@
-book/duniverse/bin_prot.v0.13.0/shape/src/bin_shape.pp.ml: Base CamlinternalFormatBasics Comparator Exp1 Identifiable Int List Map Md5_lib Option Ppx_compare_lib Ppx_sexp_conv_lib Printf Result Sexp String Variantslib

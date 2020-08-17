@@ -1,2 +1,0 @@
-(** @canonical Thread_pool.Import *)
-module Import = Thread_pool__Import

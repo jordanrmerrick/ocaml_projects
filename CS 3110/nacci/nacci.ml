@@ -15,6 +15,6 @@ let fast_fib n =
     | 1 -> prev
     | x -> helper (x-1) (pprev + prev) prev
   in
-  helper ( n+1) 0 1
+  helper (n+1) 0 1
 
 let () = printf "%i\n" (fast_fib 50)

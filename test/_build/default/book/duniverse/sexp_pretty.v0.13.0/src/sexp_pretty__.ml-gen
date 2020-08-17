@@ -1,2 +1,0 @@
-(** @canonical Sexp_pretty.Config *)
-module Config = Sexp_pretty__Config

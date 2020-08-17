@@ -1,2 +1,0 @@
-(** @canonical Nano_mutex.Import *)
-module Import = Nano_mutex__Import
